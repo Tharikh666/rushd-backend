@@ -1,0 +1,11 @@
+{
+  "latitude": 10.5276,
+  "longitude": 76.2144,
+  "timezone": "Asia/Kolkata",
+  "date": "2026-10-07",
+  "calculation": {
+    "method": "KARACHI",
+    "madhab": "SHAFI",
+    "highLatitudeRule": "MIDDLE_OF_THE_NIGHT"
+  }
+}

@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package rushd.prayer.v1;
+
+option go_package = "rushd-backend/gen/prayer/v1;prayerv1";
+
+// PrayerService provides Islamic prayer time calculations.
+service PrayerService {
+  // Calculates prayer times for a specific location and date.
+  rpc GetPrayerTimes(GetPrayerTimesRequest)
+      returns (GetPrayerTimesResponse);
+}
+
+// ------------------------------------------------------------
+// REQUEST
+// ------------------------------------------------------------
+
+message GetPrayerTimesRequest {
+  // Geographic latitude.
+  double latitude = 1;
+
+  // Geographic longitude.
+  double longitude = 2;
+
+  // IANA timezone.
+  //
+  // Example:
+  // Asia/Kolkata
+  string timezone = 3;
+
+  // Gregorian date in YYYY-MM-DD format.
+  string date = 4;
+
+  // Prayer calculation configuration.
+  CalculationSettings calculation = 5;
+}
+
+// ------------------------------------------------------------
+// CALCULATION SETTINGS
+// ------------------------------------------------------------
+
+message CalculationSettings {
+  CalculationMethod method = 1;
+  Madhab madhab = 2;
+  HighLatitudeRule high_latitude_rule = 3;
+}
+
+// ------------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------------
+
+enum CalculationMethod {
+  CALCULATION_METHOD_UNSPECIFIED = 0;
+
+  MUSLIM_WORLD_LEAGUE = 1;
+  EGYPTIAN = 2;
+  KARACHI = 3;
+  UMM_AL_QURA = 4;
+  DUBAI = 5;
+  MOON_SIGHTING_COMMITTEE = 6;
+  NORTH_AMERICA = 7;
+  KUWAIT = 8;
+  QATAR = 9;
+  SINGAPORE = 10;
+}
+
+enum Madhab {
+  MADHAB_UNSPECIFIED = 0;
+
+  SHAFI = 1;
+  HANAFI = 2;
+}
+
+enum HighLatitudeRule {
+  HIGH_LATITUDE_RULE_UNSPECIFIED = 0;
+
+  MIDDLE_OF_THE_NIGHT = 1;
+  SEVENTH_OF_THE_NIGHT = 2;
+  TWILIGHT_ANGLE = 3;
+}
+
+// ------------------------------------------------------------
+// RESPONSE
+// ------------------------------------------------------------
+
+message GetPrayerTimesResponse {
+  // Requested date.
+  string date = 1;
+
+  // Timezone used for calculation.
+  string timezone = 2;
+
+  PrayerTime fajr = 3;
+  PrayerTime sunrise = 4;
+  PrayerTime dhuhr = 5;
+  PrayerTime asr = 6;
+  PrayerTime maghrib = 7;
+  PrayerTime isha = 8;
+}
+
+// ------------------------------------------------------------
+// PRAYER TIME
+// ------------------------------------------------------------
+
+message PrayerTime {
+  string name = 1;
+  string arabic_name = 2;
+
+  // Local display time.
+  // Example: 05:02 AM
+  string time = 3;
+
+  // Complete local timestamp.
+  // Example: 2026-10-07T05:02:00+05:30
+  string iso_datetime = 4;
+}
