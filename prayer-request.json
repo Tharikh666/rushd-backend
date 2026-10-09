@@ -1,8 +1,8 @@
-{
-  "latitude": 10.5276,
-  "longitude": 76.2144,
+﻿{
+  "latitude": 8.555825,
+  "longitude": 76.881026,
   "timezone": "Asia/Kolkata",
-  "date": "2026-10-07",
+  "date": "2026-10-09",
   "calculation": {
     "method": "KARACHI",
     "madhab": "SHAFI",

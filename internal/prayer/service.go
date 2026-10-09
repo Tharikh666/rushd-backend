@@ -3,6 +3,7 @@ package prayer
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	prayerv1 "rushd-backend/gen/prayer/v1"
@@ -35,6 +36,7 @@ func (s *Service) GetPrayerTimes(
 	// Context cancellation/deadline check.
 	select {
 	case <-ctx.Done():
+		log.Printf("Context canceled: %v", ctx.Err())
 		return nil, status.Error(codes.Canceled, ctx.Err().Error())
 	default:
 	}
@@ -53,6 +55,15 @@ func (s *Service) GetPrayerTimes(
 			"calculation settings are required",
 		)
 	}
+
+	log.Printf(
+		"[PrayerService] REQUEST | latitude=%.6f longitude=%.6f timezone=%q date=%q calculation=%+v",
+		req.Latitude,
+		req.Longitude,
+		req.Timezone,
+		req.Date,
+		req.Calculation,
+	)
 
 	// Validate timezone.
 	if req.Timezone == "" {
@@ -113,6 +124,7 @@ func (s *Service) GetPrayerTimes(
 
 	// Make sure the calculator is configured.
 	if s.calculator == nil {
+		log.Print("Prayer calculator is not configured")
 		return nil, status.Error(
 			codes.Internal,
 			"prayer calculator is not configured",
@@ -135,7 +147,21 @@ func (s *Service) GetPrayerTimes(
 	}
 
 	// Convert domain response into protobuf response.
-	return prayerScheduleToProto(schedule), nil
+	response := prayerScheduleToProto(schedule)
+
+	log.Printf(
+		"[PrayerService] RESPONSE | date=%s timezone=%s Fajr=%s Sunrise=%s Dhuhr=%s Asr=%s Maghrib=%s Isha=%s",
+		response.Date,
+		response.Timezone,
+		response.Fajr.IsoDatetime,
+		response.Sunrise.IsoDatetime,
+		response.Dhuhr.IsoDatetime,
+		response.Asr.IsoDatetime,
+		response.Maghrib.IsoDatetime,
+		response.Isha.IsoDatetime,
+	)
+
+	return response, nil
 }
 
 // calculationSettingsFromProto converts protobuf calculation settings

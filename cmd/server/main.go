@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net"
+	"os"
 
 	prayerv1 "rushd-backend/gen/prayer/v1"
 	"rushd-backend/internal/prayer"
@@ -11,9 +12,16 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const grpcAddress = "0.0.0.0:50051"
+const defaultPort = "50051"
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
+
+	grpcAddress := ":" + port
+
 	listener, err := net.Listen("tcp", grpcAddress)
 	if err != nil {
 		log.Fatalf(
